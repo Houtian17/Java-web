@@ -19,13 +19,13 @@ public class server {
         //获取请求数据
         //发送响应数据
         int port = 9001;
-        log("访问 http://localhost:%s",port);
+        log(" http://localhost:%s",port);
         try(ServerSocket serverSocket = new ServerSocket(port)){
             try(Socket socket= serverSocket.accept()){
-                log("client 连接成功");
+                log("client connection successful");
                 //读取客户端请求数据
                 String request= socketReadAll(socket);
-                log("请求：\n%s",request);
+                log("request：\n%s",request);
 
                 String body = "<html><body>1234</body></html>";
                 String length = String.format("Content-Length: %s", body.length());
@@ -51,9 +51,25 @@ public class server {
 
         int bufferSize = 1024;
         char[] data = new char[bufferSize];
-        StringBuilder request =new StringBuilder();
-        int size =reader.read(data,0,data.length);
-        request.append(data,0,size);
+        StringBuilder request = new StringBuilder();
+
+        while(true){
+            int size =reader.read(data,0,data.length);//size是真正读到的数据
+
+            if (size>0){
+                request.append(data,0,size);
+            }
+            log("size and data:" + size+"||"+data.length);
+
+//            if (size <bufferSize){
+//                break;
+//            }
+
+            if (!reader.ready()){
+                break;
+            }
+
+        }
 
         return request.toString();
     }
